@@ -74,6 +74,7 @@ enum HKCommand{
     RunPowerShellYtDlp,
     RunPowerShellYtDlpFirefox,
     RunPowerShellYtDlpFirefoxOnlyText,
+    RunYandexMusic,
 }
 unsafe fn first_row_command() -> Option<HKCommand> {
     if GetAsyncKeyState(0x31) < 0 {
@@ -84,15 +85,41 @@ unsafe fn first_row_command() -> Option<HKCommand> {
         Some(HKCommand::RunPowerShellYtDlpFirefox)
     } else if GetAsyncKeyState(0x34) < 0 {
         Some(HKCommand::RunPowerShellYtDlpFirefoxOnlyText)
+    } else if GetAsyncKeyState(0x35) < 0 {
+        None
     } else{
         None
     }
 }
 unsafe fn second_row_command() -> Option<HKCommand> {
-    None
+    if GetAsyncKeyState(0x31) < 0 {
+        None
+    } else if GetAsyncKeyState(0x32) < 0 {
+        None
+    } else if GetAsyncKeyState(0x33) < 0 {
+        None
+    } else if GetAsyncKeyState(0x34) < 0 {
+        None
+    } else if GetAsyncKeyState(0x35) < 0 {
+        None
+    } else{
+        None
+    }
 }
 unsafe fn third_row_command() -> Option<HKCommand> {
-    None
+    if GetAsyncKeyState(0x31) < 0 {
+        None
+    } else if GetAsyncKeyState(0x32) < 0 {
+        None
+    } else if GetAsyncKeyState(0x33) < 0 {
+        None
+    } else if GetAsyncKeyState(0x34) < 0 {
+        None
+    } else if GetAsyncKeyState(0x35) < 0 {
+        Some(HKCommand::RunYandexMusic)
+    } else{
+        None
+    }
 }
 fn run_command(cmd: HKCommand) {
     match cmd {
@@ -107,6 +134,9 @@ fn run_command(cmd: HKCommand) {
         },
         HKCommand::RunPowerShellYtDlpFirefoxOnlyText => {
             run_yt_dlp_firefox_only_text();
+        },
+        HKCommand::RunYandexMusic => {
+            run_yandex_music();
         }
     }
 }
@@ -159,9 +189,21 @@ fn run_yt_dlp_firefox_only_text(){
         eprintln!("{}", err);
     }
 }
+fn run_yandex_music(){
+    let path = format!("{}\\Local\\Programs\\YandexMusic\\Яндекс Музыка.exe", get_app_data_path());
+    if let Err(err) =
+        Command::new(path)
+            .spawn()
+    {
+        eprintln!("{}", err);
+    }
+}
 
 fn get_desktop_path() -> String {
     format!("{}\\Desktop",  env::var("USERPROFILE").unwrap_or(String::from("")))
+}
+fn get_app_data_path() -> String {
+    format!("{}\\AppData",  env::var("USERPROFILE").unwrap_or(String::from("")))
 }
 fn get_clipboard_text() -> Result<String, Box<dyn Error>> {
     let mut ctx: ClipboardContext = ClipboardProvider::new()?;
