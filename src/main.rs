@@ -1,6 +1,7 @@
 #![windows_subsystem = "windows"]
 
 use std::env;
+use std::error::Error;
 use std::process::Command;
 use clipboard::{ClipboardContext, ClipboardProvider};
 use winapi::um::winuser::{GetAsyncKeyState, VK_LCONTROL, VK_RCONTROL, VK_LSHIFT, VK_RSHIFT};
@@ -121,7 +122,7 @@ fn run_yt_dlp(){
     if let Err(err) =
         Command::new("yt-dlp")
             .args(&[
-                &get_clipboard_text(),
+                &get_clipboard_text().unwrap_or(String::from("")),
             ])
             .current_dir(get_desktop_path())
             .spawn()
@@ -134,7 +135,7 @@ fn run_yt_dlp_firefox(){
         Command::new("yt-dlp")
             .args(&[
                 "--cookies-from-browser firefox",
-                &get_clipboard_text(),
+                &get_clipboard_text().unwrap_or(String::from("")),
             ])
             .current_dir(get_desktop_path())
             .spawn()
@@ -150,7 +151,7 @@ fn run_yt_dlp_firefox_only_text(){
                 "--write-auto-sub",
                 "--sub-lang ru",
                 "--skip-download",
-                &get_clipboard_text(),
+                &get_clipboard_text().unwrap_or(String::from("")),
             ])
             .current_dir(get_desktop_path())
             .spawn()
@@ -162,7 +163,7 @@ fn run_yt_dlp_firefox_only_text(){
 fn get_desktop_path() -> String {
     format!("{}\\Desktop",  env::var("USERPROFILE").unwrap_or(String::from("")))
 }
-fn get_clipboard_text() -> String {
-    let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
-    ctx.get_contents().unwrap()
+fn get_clipboard_text() -> Result<String, Box<dyn Error>> {
+    let mut ctx: ClipboardContext = ClipboardProvider::new()?;
+    Ok(ctx.get_contents()?)
 }
