@@ -164,7 +164,8 @@ fn run_yt_dlp_firefox(){
     if let Err(err) =
         Command::new("yt-dlp")
             .args(&[
-                "--cookies-from-browser firefox",
+                "--cookies-from-browser",
+                "firefox",
                 &get_clipboard_text().unwrap_or(String::from("")),
             ])
             .current_dir(get_desktop_path())
@@ -177,9 +178,11 @@ fn run_yt_dlp_firefox_only_text(){
     if let Err(err) =
         Command::new("yt-dlp")
             .args(&[
-                "--cookies-from-browser firefox",
+                "--cookies-from-browser",
+                "firefox",
                 "--write-auto-sub",
-                "--sub-lang ru",
+                "--sub-lang",
+                "ru",
                 "--skip-download",
                 &get_clipboard_text().unwrap_or(String::from("")),
             ])
